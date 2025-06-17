@@ -1,3 +1,5 @@
+import { createSlice } from '@reduxjs/toolkit';
+
 const initialState = {
   // Текущий проект
   currentProject: {
@@ -12,6 +14,7 @@ const initialState = {
       activeNode: 'root',
       activeTab: 'tasks',
       expandedNodes: [],
+      tabbedNodes: [],
       filters: {
         status: 'all',
         priority: 'all',
@@ -181,5 +184,6 @@ const uiSlice = createSlice({
   }
 });
 
+export const { setCurrentProject } = uiSlice.actions;
 
-
+export default uiSlice.reducer;

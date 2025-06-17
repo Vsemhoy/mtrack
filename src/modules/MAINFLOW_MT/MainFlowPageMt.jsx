@@ -3,7 +3,6 @@ import DevSideNavMt from '../../components/MimiTemplate/components/DEVSIDENAV/De
 
 
 const MainFlowPage = ({user_data, user_state}) => {
-    const [setsideNavOpened, setSetsideNavOpened] = useState(false);
 
   return (
     <div className={`mi-page-layout ${user_state?.role == 'developer' ? 'mi-layout-dev' : 'mi-layout-client'}`}>

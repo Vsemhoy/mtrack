@@ -19,6 +19,7 @@ import MenuBox from './components/MimiTemplate/components/MENUBOX/MenuBox';
 import MainFlowPage from './modules/MAINFLOW_MT/MainFlowPageMt';
 import TreeTaskPage from './modules/TASKER_MT/TREETASK_MT/TreeTaskPage';
 import KanbanPage from './modules/TASKER_MT/KANBAN_MT/KanbanPage';
+import ProjectPageMt from './modules/PROJECTS_MT/ProjectsPageMt';
 
 
 function App() {
@@ -86,6 +87,9 @@ function App() {
 
             <Route path={'/dev/kanban'} element={<KanbanPage userdata={userProfile} user_state={USER_STATE}/>} />
             <Route path={BASE_ROUTE + '/dev/kanban'} element={<KanbanPage userdata={userProfile} user_state={USER_STATE}/>}/>
+
+            <Route path={'/dev/projects'} element={<ProjectPageMt userdata={userProfile} user_state={USER_STATE}/>} />
+            <Route path={BASE_ROUTE + '/dev/projects'} element={<ProjectPageMt userdata={userProfile} user_state={USER_STATE}/>}/>
 
             {/* <Route path={'/'} element={<MainPageUt userdata={userProfile}/>} />
             <Route path={BASE_ROUTE + '/'} element={<MainPageUt userdata={userProfile}/>}  />

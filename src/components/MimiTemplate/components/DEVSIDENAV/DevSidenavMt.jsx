@@ -3,6 +3,9 @@ import './devsidenavmt.css';
 import { DropboxOutlined, FileWordFilled, Html5Filled, SettingFilled } from '@ant-design/icons';
 import { Affix } from 'antd';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentProject } from '../../../../storage/uiSlice';
+
 const DevSideNavMt = (props) => {
     const [menuOpened, setMenuOpened] = useState(false);
     const [openedBlock, setOpenedBlock] = useState(null);
@@ -111,13 +114,50 @@ export default DevSideNavMt;
 
 const ProjectBlock = (props)=>{
     const [activeItem, setActiveItem] = useState(null);
+    const baseProjects = useSelector(state => state.projects.list);
+    const activeProject = useSelector(state => state.ui.currentProject);
+    const [projects, setProjects] = useState([]);
+    const dispatch = useDispatch();
+    
+    
+    useEffect(() => {
+        setProjects(baseProjects.filter((item)=> item.id !== activeProject?.id));
+        const acProject = baseProjects.find(item => item.id === activeProject?.id);
+        if (acProject){
+            setActiveItem(acProject);
+        }
+    }, [baseProjects, activeProject]);
+
+
+    const handleSetActiveProject = (id, name) => {
+        const no = {
+            id: id,
+            name: name,
+        };
+        dispatch(setCurrentProject(no));
+    }
 
     return (
         <div>
 
             <div className={'mi-ds-menu-proj-stack'}>
-                <div className='mi-ds-menu-proj-stack-item'>
-                    akdjflkasjdklfaj
+                <div className={'mi-ds-menu-proj-stack-item'}>
+                    {activeItem && (
+                        <div className={'mi-ds-menu-proj-card-item active'}>
+                            <div className={'mi-ds-menu-proj-card-item-name'}>
+                            {activeItem.name}
+                            </div>
+                        </div>
+                    )}
+                    {projects.map((porridge, i)=>(
+                        <div className={'mi-ds-menu-proj-card-item'}
+                            onClick={()=>{handleSetActiveProject(porridge.id, porridge.name)}}
+                            >
+                            <div className={'mi-ds-menu-proj-card-item-name'}>
+                            {porridge.name}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

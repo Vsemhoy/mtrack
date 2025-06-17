@@ -65,3 +65,18 @@
 color: rgba(0, 0, 0, 0.88);
     background-color: #e6f4ff;
 }
+
+.mi-ds-menu-proj-card-item {
+    border-bottom: 1px solid gray;
+    padding: 12px;
+    transition: all 0.3s;
+}
+.mi-ds-menu-proj-card-item-name {
+    font-size: larger;
+}
+.mi-ds-menu-proj-card-item.active {
+    background: #0d111744;
+}
+.mi-ds-menu-proj-card-item:hover {
+    background: #0d11172d;
+}
