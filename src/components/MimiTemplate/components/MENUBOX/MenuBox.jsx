@@ -75,7 +75,7 @@ const developerItems = [
 
   return (
     <Affix offsetTop={0}>
-    <div className={'mi-container mi-bg-base mi-block-menu mi-br-3'}>
+    <div className={'mi-container mi-bg-base mi-block-menu mi-br-3'} >
       
       <div className={'mi-flex'}>
        <NavLink to={'/home'}

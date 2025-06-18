@@ -73,7 +73,7 @@ function App() {
   return (
     <Layout>
       <BrowserRouter basename={BASE_NAME}>
-        <div>
+        <div id='top'>
           <MenuBox
             user_state={USER_STATE}
           />

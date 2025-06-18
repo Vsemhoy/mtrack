@@ -77,27 +77,27 @@ const ProjectEditorBlock = (props) => {
 
     // Обновление существующего проекта
     const handleSaveData = () => {
-    const updatedProject = {
-        id: props.data.id,
-        parent_project_id: parentProjectId,
-        name,
-        text: content,
-        visible_rule: visibleRule,
-        project_link: projectLink,
-        current_version: currentVersion,
-        sort_order: sortOrder,
-        public_access_key: publicAccessKey,
-        deleted
-    };
+        const updatedProject = {
+            id: props.data.id,
+            parent_project_id: parentProjectId,
+            name,
+            text: content,
+            visible_rule: visibleRule,
+            project_link: projectLink,
+            current_version: currentVersion,
+            sort_order: sortOrder,
+            public_access_key: publicAccessKey,
+            deleted
+        };
 
-    // 🚀 Диспатчим обновление
-    dispatch(updateProject({ 
-        id: props.data.id, 
-        changes: updatedProject 
-    }));
+        // 🚀 Диспатчим обновление
+        dispatch(updateProject({ 
+            id: props.data.id, 
+            changes: updatedProject 
+        }));
 
-    // 📌 Опционально: вызываем on_save
-    props.on_save?.();
+        // 📌 Опционально: вызываем on_save
+        props.on_save?.();
     };
 
     const generatePkey = ()=>{
@@ -109,7 +109,7 @@ const ProjectEditorBlock = (props) => {
     }
 
   return (
-    <div className=''>
+    <div className='' >
         <div className={'mi-flex-space mi-pa-12 mi-tool-panel'}>
             <div>
 
@@ -138,7 +138,7 @@ const ProjectEditorBlock = (props) => {
 
             <div data-color-mode="light" style={{ backgroundColor: "#fff", color: "#000" }}>
             {editMode ? (
-                <>
+                <div >
                 <div className={'mi-pa-12'}>
                     <Input value={name} 
                         onChange={(ev)=>{setName(ev.target.value)}}
@@ -147,7 +147,7 @@ const ProjectEditorBlock = (props) => {
                     />
                 </div>
                 <MDEditor
-                    style={{minHeight: 'calc(500px)'}}
+                    style={{minHeight: 'calc(100vh - 250px)'}}
                     value={content}
                     preview={'edit'}
                     className="markdown-body--light"
@@ -178,7 +178,7 @@ const ProjectEditorBlock = (props) => {
                     commands.help
                 ]}
                                     ></MDEditor>
-                                    </>
+                                    </div>
 
             ):(
                 <div className='mi-pa-12'>

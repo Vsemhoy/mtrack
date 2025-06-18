@@ -45,6 +45,13 @@ const ProjectPageMt = ({user_data, user_state}) => {
     const handleOpenEditor = (id) => {
         setSelectedNode(baseProjects.find((item)=> item.id === id));
         setViewportMode('editor');
+        let q = document.querySelector('#top');
+        if (q){
+            q.scrollIntoView({ 
+        behavior: 'auto',
+        block: 'start'
+      });
+        }
     }
 
     const hanleCloseEditor = () => {
@@ -53,7 +60,9 @@ const ProjectPageMt = ({user_data, user_state}) => {
     }
 
   return (
-        <div className={`mi-page-layout ${user_state?.role == 'developer' ? 'mi-layout-dev' : 'mi-layout-client'}`}>
+        <div className={`mi-page-layout ${user_state?.role == 'developer' ? 'mi-layout-dev' : 'mi-layout-client'}`}
+        
+        >
         {user_state?.role == 'developer' && (
             <DevSideNavMt />
         )}
