@@ -6,6 +6,8 @@ import { AccountBookOutlined, CloseOutlined, CloseSquareOutlined, CodepenSquareF
 import TreeTaskRowCard from './components/TreeTaskRowCard';
 import TreeTaskEditor from './components/TreeTaskEditor';
 
+import { useSelector, useDispatch } from 'react-redux';
+
 
 const generateRandomKey = () => Math.random().toString(36).substr(2, 9);
 
@@ -139,6 +141,9 @@ const menuProps = {
 
 
 const TreeTaskPage = ({user_data, user_state}) => {
+    const baseProjects = useSelector(state => state.projects.list);
+    const activeProject = useSelector(state => state.ui.currentProject);
+
     const [baseNodeCollection, setBaseNodeCollection] = useState(treeData);
     const [nodeCollection, setNodeCollection] = useState(treeData);
   const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
@@ -628,7 +633,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                     <div className={'mi-window'}>
                         <div className={'mi-window-control'}>
                             <div className={'mi-window-control-title'}>
-                                Project name
+                                Project tree
                             </div>
                             <div className='mi-flex'>
                                 <div className={'mi-window-control-button'}>
@@ -657,7 +662,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
 
                             <div className={`mi-tree-header-name ${activeNode === 'root' ? 'active' : ''}`} onClick={()=>{setActiveNode('root'); setViewportMode('tree')}}>
                                 <span>🗂️ </span>
-                                <span>Название проекта, может быть сколь угодно длинное...</span>
+                                <span>{activeProject ? activeProject.name : 'проект не выбран'}</span>
                                 
                             </div>  
 
@@ -695,7 +700,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                 <span style={{marginRight: '6px'}}>
                                 <MergeOutlined />
                                 </span> 
-                                <span>Tree</span>
+                                <span>Local tree</span>
                                 {/* <span className={'mi-wintab-closer'}>
                                     <span>
                                         <CloseOutlined />

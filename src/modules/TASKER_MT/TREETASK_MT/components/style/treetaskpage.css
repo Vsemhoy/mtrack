@@ -33,7 +33,7 @@
 } */
 .mi-tree-header-name {
     margin-bottom: 12px;
-    font-size: smaller;
+    font-size: larger;
     font-weight: 600;
     cursor: pointer;
     padding: 3px;

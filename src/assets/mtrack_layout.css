@@ -269,9 +269,9 @@
     background-color: rgba(0, 0, 0, 0.426);
 }
 .mi-window-control-title {
-    color: white;
+    color: rgb(27, 27, 27) !important;
     padding: 6px;
-    text-shadow: 1px 1px 12px black;
+    /* text-shadow: 1px 1px 12px black; */
 }
 
 .App {
