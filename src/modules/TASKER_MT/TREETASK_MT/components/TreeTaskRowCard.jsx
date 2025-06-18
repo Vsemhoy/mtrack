@@ -17,7 +17,7 @@ const TreeTaskRowCard = (props) => {
 
     const [itemTitle, setItemTitle] = useState(props.data?.title);
 
-
+    const [menuItems, setMenuItems] = useState([]);
 
 
 
@@ -68,37 +68,40 @@ const TreeTaskRowCard = (props) => {
       }
     }
 
-
-        const menuItems = [
-    {
-        key: '5',
-        label: (
-          <div onClick={handleDeleteNode}>
-            Удалить
-          </div>
-        ),
-        icon: <DeleteOutlined />,
-        danger: true
-      },
+    useEffect(() => {
+        let newMenu = [];
+        newMenu.push({
+          key: '5',
+          label: (
+            <div onClick={handleDeleteNode}>
+              Удалить
+            </div>
+          ),
+          icon: <DeleteOutlined />,
+          danger: true
+        });
+        if (item.type === 'section' && props.level < 3)
         {
-        key: '4',
-        label: (
-          <div onClick={handleAddSectionBelow}>
-            Добавить секцию
-          </div>
-        ),
-        icon: <PlusSquareOutlined />
-      },
-      {
-        key: '1',
-        label: (
-          <div onClick={handleAddChildSection}>
+          newMenu.push({
+            key: '4',
+            label: (
+              <div onClick={handleAddSectionBelow}>
+                Добавить секцию
+              </div>
+            ),
+            icon: <PlusSquareOutlined />
+          });
+          newMenu.push({
+            key: '1',
+            label: (
+              <div onClick={handleAddChildSection}>
             Добавить подсекцию
           </div>
         ),
         icon: <DownSquareOutlined />
-      },
-      {
+      });
+    }
+      newMenu.push({
         key: '2',
         label: (
           <div onClick={handleAddTaskBelow}>
@@ -106,8 +109,8 @@ const TreeTaskRowCard = (props) => {
           </div>
         ),
         icon: <PlusCircleOutlined />
-      },
-      {
+      });
+      newMenu.push({
         key: '3',
         label: (
           <div onClick={handleAddChildTask}>
@@ -115,8 +118,11 @@ const TreeTaskRowCard = (props) => {
           </div>
         ),
         icon: <DownCircleOutlined />
-      },
-    ];
+      });
+      setMenuItems(newMenu);
+    }, [item]);
+
+
 
 
     const handleEnterEditor = (ev)=>{

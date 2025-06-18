@@ -233,14 +233,14 @@ const TreeTaskPage = ({user_data, user_state}) => {
     // Проверить ограничения
  // Проверяем ограничения
   if (dragNode.type === 'section') {
-    if (dropNode.type !== 'section' || finalDepth > 3) {
-      alert('Секции можно вкладывать только в секции до 3-го уровня');
+    if (dropNode.type !== 'section' || finalDepth > 4) {
+      alert('Секции можно вкладывать только в секции до третьего уровня');
       return;
     }
   }
   if (dragNode.type === 'document') {
     if (finalDepth > 7) {
-      alert('Документы нельзя вкладывать глубже 7-го уровня');
+      alert('Документы нельзя вкладывать глубже седьмого уровня');
       return;
     }
   }
@@ -775,7 +775,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                     {nodeCollection.map((item)=>(
                                         <>
                                             {item && (
-                                                                                        <TreeTaskRowCard
+                                          <TreeTaskRowCard
                                             key={item.key}
                                             on_change_title={handleChangeTaskTitle}
                                             data={item}
@@ -783,6 +783,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                             on_add_section={handleAddSection}
                                             on_delete_node={handleDeleteNode}
                                             on_enter_editor={handleEnterEditor}
+                                              level={getLevel({ children: baseNodeCollection }, item.key)}
                                             />
                                             )}
                                         </>
