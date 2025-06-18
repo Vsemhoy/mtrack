@@ -285,3 +285,19 @@
   text-overflow: ellipsis;
   max-width: 220px;
 }
+
+.mi-tool-panel {
+    border-bottom: 1px solid #b5b5b5;
+
+}
+
+.mi-form-item {    
+    padding-top: 3px;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+}
+.mi-form-label {
+    color: rgb(39, 52, 65);
+    padding-bottom: 6px;
+}

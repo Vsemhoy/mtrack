@@ -12,7 +12,7 @@ const demoProjects = [
     current_version: '0.0.11',
     sort_order: 1,
     public_access_key: null,
-    disabled: 0
+    deleted: 0
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ const demoProjects = [
     current_version: '1.2.4',
     sort_order: 2,
     public_access_key: 'a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8',
-    disabled: 0
+    deleted: 0
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const demoProjects = [
     current_version: '0.3.0',
     sort_order: 0,
     public_access_key: null,
-    disabled: 0
+    deleted: 0
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ const demoProjects = [
     current_version: '0.2.1',
     sort_order: 1,
     public_access_key: 'b2c3d4e5-f6g7-h8i9-j0k1-l2m3n4o5p6q7',
-    disabled: 0
+    deleted: 0
   },
   {
     id: 5,
@@ -60,7 +60,7 @@ const demoProjects = [
     current_version: '1.0.0',
     sort_order: 3,
     public_access_key: null,
-    disabled: 0
+    deleted: 0
   }
 ];
 
@@ -92,7 +92,7 @@ const projectsSlice = createSlice({
     updateProject: (state, action) => {
       const index = state.list.findIndex(p => p.id === action.payload.id);
       if (index !== -1) {
-        state.list[index] = { ...state.list[index], ...action.payload };
+        state.list[index] = { ...state.list[index], ...action.payload.changes };
       }
     },
     deleteProject: (state, action) => {
