@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DevSideNavMt from '../../../components/MimiTemplate/components/DEVSIDENAV/DevSidenavMt';
 import { Button, Dropdown, Tree } from 'antd';
 import './components/style/treetaskpage.css';
-import { AccountBookOutlined, CloseOutlined, CloseSquareOutlined, CodepenSquareFilled, EllipsisOutlined, EnterOutlined, FileOutlined, FolderOutlined, MergeOutlined, MinusOutlined, UserOutlined } from '@ant-design/icons';
+import { AccountBookOutlined, CloseOutlined, CloseSquareOutlined, CodepenSquareFilled, EllipsisOutlined, EnterOutlined, FileOutlined, FolderOutlined, MergeOutlined, MinusOutlined, PushpinFilled, UserOutlined } from '@ant-design/icons';
 import TreeTaskRowCard from './components/TreeTaskRowCard';
 import TreeTaskEditor from './components/TreeTaskEditor';
 
@@ -119,8 +119,9 @@ const items = [
     danger: true,
   },
   {
-label: <div className={'mi-flex-space'}><span>CLEAR TABS</span> <span className='mi-wintab-closer'><CloseOutlined ></CloseOutlined></span></div>,
-    key: '4',
+    label: <div className={'mi-flex-space'}><span>CLEAR TABS</span> <span className='mi-wintab-closer'><CloseOutlined ></CloseOutlined></span></div>,
+    key: 'clearshadow',
+    id: 'clearshadow',
     icon: <span><CloseSquareOutlined /></span>,
     // disabled: true,
   },
@@ -148,6 +149,7 @@ const TreeTaskPage = ({user_data, user_state}) => {
 
     const [viewportMode, setViewportMode] = useState('tree');
 
+    const [shadowOpenedItems, setshadowOpenedItems] = useState([]);
 
     function getLevel(node, key, level = 0) {
         if (!node) return 0;
@@ -162,7 +164,9 @@ const TreeTaskPage = ({user_data, user_state}) => {
     }
 
     useEffect(() => {
+      if (selectedKeys[0] !== 'root'){
         setSelectedNode(findNodeByKey(baseNodeCollection, selectedKeys[0]));
+      }
     }, [selectedKeys]);
 
   useEffect(() => {
@@ -295,14 +299,109 @@ const TreeTaskPage = ({user_data, user_state}) => {
     };
 
     const onDoubleClick = (node) => {
+      console.log('DBL', node)
+      if (viewportMode !== 'editor'){
         setViewportMode('editor');
         console.log('node. ID ', node)
         if (node.key){
             setSelectedKeys([node.key]);
             setCurrentItemId(node.id);
         }
+      } else {
+        let shadowItems = JSON.parse(JSON.stringify(shadowOpenedItems));
+        let newItems = [];
+
+        let item = findNodeByKey(baseNodeCollection, node.id);
+        
+
+        console.log('item', item, baseNodeCollection)
+        if (item){
+          newItems.push({
+            key: `shade_${item.id}`,
+            id: item.id, 
+            type: item.type,
+            label: <div className={'mi-flex-space mi-truncated'} >{item.title}</div>,
+            icon: node.type === 'section' ? <FolderOutlined  title={item.title}/> : <FileOutlined  title={item.title}/>
+          });
+
+          for (let i = 0; i < shadowItems.length; i++) {
+            const element = shadowItems[i];
+            
+            if (element.id !== 'clearshadow' && element.id !== node.id){
+              let item2 = findNodeByKey(baseNodeCollection, element.id);
+              newItems.push({
+              key: `shade_${element.id}`,
+              id: element.id, 
+              label: <div className={'mi-flex-space mi-truncated'}>{item2?.title}</div>,
+              icon: element.type === 'section' ? <FolderOutlined  title={item2.title} /> : <FileOutlined  title={item2.title}/>
+          })
+            }
+          }
+          console.log('newItems', newItems)
+          if (newItems.length){
+            newItems.push( {
+              label: <div className={'mi-flex-space'}><span>CLEAR TABS</span> </div>,
+              key: 'clearshadow',
+              id: 'clearshadow',
+              icon: <span><CloseSquareOutlined /></span>,
+              danger: true
+              // disabled: true,
+            });
+          }
+
+        }
+        setshadowOpenedItems(newItems);
+      }
     }
 
+    const handleClickShadeTab = (itm) => {
+      // console.log('first', id)
+      let id = itm.key.replace('shade_', '');
+      if (id === 'clearshadow'){
+        setshadowOpenedItems([]);
+      } else {
+        setActiveNode(id);
+        setSelectedKeys([id]);
+        // let ns = JSON.parse(JSON.stringify(shadowOpenedItems)).filter((item) => item.id !== id);
+        // console.log('ns', ns)
+        // setshadowOpenedItems(ns);
+      }
+    }
+
+    const handleRemoveFromShadeTab = (id) => {
+      // console.log('first', id)
+        const updatedItems = [...shadowOpenedItems].filter(item => item.id !== id);
+      // Если остался 1 элемент — очищаем полностью
+      setshadowOpenedItems(updatedItems.length === 1 ? [] : updatedItems);
+    }
+
+    const handleAddToShadeTab = (id) => {
+      console.log('id', id)
+      let ns = findNodeByKey(baseNodeCollection, id);
+      console.log('ns', ns)
+      if (ns){
+        let obj = {
+              key: `shade_${ns.id}`,
+              id: ns.id, 
+              label: <div className={'mi-flex-space mi-truncated'}>{ns?.title}</div>,
+              icon: ns.type === 'section' ? <FolderOutlined title={ns?.title} /> : <FileOutlined title={ns?.title} />
+          };
+          if (shadowOpenedItems.length === 0){
+            setshadowOpenedItems([obj,{
+              label: <div className={'mi-flex-space'}><span>CLEAR TABS</span> </div>,
+              key: 'clearshadow',
+              id: 'clearshadow',
+              icon: <span><CloseSquareOutlined /></span>,
+              danger: true
+              // disabled: true,
+            }]);
+
+          } else {
+            setshadowOpenedItems([obj, ...shadowOpenedItems]);
+          }
+      }
+      
+    }
 
     const updateNodeTitle = (nodes, keyToUpdate, newTitle) => {
     return nodes.map(node => {
@@ -324,8 +423,22 @@ const TreeTaskPage = ({user_data, user_state}) => {
     };
 
     const handleChangeTaskTitle = (id, title) => {
-    const updatedTree = updateNodeTitle(baseNodeCollection, id, title);
-    setBaseNodeCollection(updatedTree); // Обновляем состояние реакта
+      const updatedTree = updateNodeTitle(baseNodeCollection, id, title);
+      setBaseNodeCollection(updatedTree); // Обновляем состояние реакта
+
+      setshadowOpenedItems(shadowOpenedItems.map(node => {
+        if (node.id === id){
+          return  {...node, label: title}
+        };
+        return node;
+      }));
+
+      if (selectedNode.id === id){
+        setSelectedNode({
+          id: id, 
+          title: title
+        });
+      }
     };
 
 
@@ -492,15 +605,19 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
     const handleEnterEditor = (item_id) => {
         setViewportMode('editor');
         setCurrentItemId(item_id);
+        let nnode = findNodeByKey(baseNodeCollection, item_id);
+        if (nnode){
+
+          setSelectedNode(nnode);
+        }
     }
+
 
 
   return (
     <div className={`mi-page-layout ${user_state?.role == 'developer' ? 'mi-layout-dev' : 'mi-layout-client'}`}>
         {user_state?.role == 'developer' && (
-            <DevSideNavMt 
-
-            />
+            <DevSideNavMt />
         )}
         <div className={'mi-layout-body'}><div className={'mi-page-wrapper'}>
         <div className={"mi-ska-mw-1900"}>
@@ -585,23 +702,46 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                     </span>
                                 </span> */}
                                     
+
+
+
                                 </div>
-                                <div className={`mi-window-topbar-tab ${viewportMode === 'editor' ? 'active' : ''}`} 
+                                {selectedNode !== null && (
+                                  <div className={`mi-window-topbar-tab ${viewportMode === 'editor' ? 'active' : ''}`} 
                                     onClick={()=>{setViewportMode('editor')}}>
-                                    <span>Задача охереть какая и вообще...</span>
+                                    <span
+                                      style={{minWidth: '100px'}}
+                                     className='mi-truncated'>{selectedNode?.type === 'section' ? <FolderOutlined /> : <FileOutlined />} 
+                                    <span style={{marginLeft: '12px'}}>{selectedNode?.title}</span></span>
                                     <span className={'mi-wintab-closer'}>
-                                        <span>
+                                      {shadowOpenedItems.length > 0 && shadowOpenedItems.find((shi)=>shi.id === selectedNode?.id) != null ? (
+                                        <span 
+                                        onClick={()=>{handleRemoveFromShadeTab(selectedNode?.id)}}
+                                         title='удалить из стека'>
                                             <CloseOutlined />
                                         </span>
+                                      ) : (
+                                        <span
+                                          onClick={()=>{handleAddToShadeTab(selectedNode?.id)}}
+                                         title='удалить из стека'>
+                                            <PushpinFilled />
+                                        </span>
+                                      )}
+
                                     </span>
                                 </div>
-                                <Dropdown 
-                                    menu={menuProps} placement="bottom" icon={<UserOutlined />}
-                                >
-                                    <div className={'mi-window-topbar-tab'}>
-                                        <EllipsisOutlined />
-                                    </div>
-                                </Dropdown>
+                                )}
+                                
+                                {shadowOpenedItems.length > 0 && (
+                                  <Dropdown 
+                                      menu={{items: shadowOpenedItems, onClick: handleClickShadeTab}} placement="bottom" 
+                                      icon={<UserOutlined />}
+                                  >
+                                      <div className={'mi-window-topbar-tab'}>
+                                          <EllipsisOutlined />
+                                      </div>
+                                  </Dropdown>
+                                )}
                             </div>
                             <div className='mi-flex'>
                                 <div className={'mi-window-control-button'}>
@@ -612,6 +752,8 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                 </div>
                             </div>
                         </div>
+
+
 
                         {viewportMode === 'tree' && (
                         <div className={'mi-window-body'}>
