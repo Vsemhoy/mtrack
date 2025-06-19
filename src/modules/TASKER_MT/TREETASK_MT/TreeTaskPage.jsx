@@ -511,8 +511,13 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
 
     const handleAddSection = (where, target_id) => {
         console.log('where', where); // can be 'below' or 'child'
-        const updatedTree = insertNodeInTree(baseNodeCollection, target_id, 'section', makeNewNode('section'), where);
-        setBaseNodeCollection(updatedTree);
+        if (target_id){
+          const updatedTree = insertNodeInTree(baseNodeCollection, target_id, 'section', makeNewNode('section'), where);
+          setBaseNodeCollection(updatedTree);
+        } else {
+          setBaseNodeCollection([...nodeCollection, makeNewNode('section')]);
+        }
+
     }
 
 
@@ -789,7 +794,15 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                         </>
 
                                     ))}
+                                    {activeNode === 'root' && (
 
+                                      <div
+                                      className={'mi-pseudo-card-create-trigger'}
+                                        onClick={()=>{handleAddSection('after', null)} }
+                                      >
+                                      Создать секцию
+                                      </div>
+                                    )}
                                 </div>
 
                             </div>
@@ -806,10 +819,8 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                     </div>
 
 
-
                 </div>
                 <br/>
-
 
         </div>
     </div>

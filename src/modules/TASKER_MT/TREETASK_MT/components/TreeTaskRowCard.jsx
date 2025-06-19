@@ -80,6 +80,7 @@ const TreeTaskRowCard = (props) => {
           icon: <DeleteOutlined />,
           danger: true
         });
+        // нельзя создавать секции ниже 3 уровня
         if (item.type === 'section' && props.level < 3)
         {
           newMenu.push({
@@ -101,6 +102,8 @@ const TreeTaskRowCard = (props) => {
         icon: <DownSquareOutlined />
       });
     }
+    // Запрет создавать задачи на 1 уровне (в корне проекта)
+    if (level > 1){
       newMenu.push({
         key: '2',
         label: (
@@ -110,6 +113,7 @@ const TreeTaskRowCard = (props) => {
         ),
         icon: <PlusCircleOutlined />
       });
+    }
       newMenu.push({
         key: '3',
         label: (

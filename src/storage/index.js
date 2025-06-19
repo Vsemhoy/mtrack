@@ -17,6 +17,7 @@ const rootReducer = combineReducers({
   options: optionsReducer,
   ui: uiReducer,
   projects: projectsReducer,
+  tasks: tasksReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

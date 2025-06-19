@@ -146,3 +146,22 @@
     background-color: gainsboro;
     min-height: calc(100vh - 200px);
 }
+
+.mi-pseudo-card-create-trigger {
+    text-align: center;
+    padding: 4px;
+    border: 1px solid rgb(215, 215, 215);
+    margin-top: 12px;
+    color: gray;
+    background-color: rgba(230, 230, 230, 0);
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+}
+.mi-pseudo-card-create-trigger:hover {
+    background-color: rgb(235, 235, 235);
+}
+.mi-pseudo-card-create-trigger:active {
+    color: rgb(54, 54, 54);
+    background-color: rgb(204, 204, 204);
+}
