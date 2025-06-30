@@ -7,7 +7,8 @@ import TreeTaskRowCard from './components/TreeTaskRowCard';
 import TreeTaskEditor from './components/TreeTaskEditor';
 
 import { useSelector, useDispatch } from 'react-redux';
-
+import { loadTree, addTreeNode, updateTreeNode, addTabbedNode, setActiveDocument, fetchProjectTree } from '../../../storage/tasksSlice';
+import { generateShortId } from '../../../utils/Text/Generators';
 
 const generateRandomKey = () => Math.random().toString(36).substr(2, 9);
 
@@ -136,16 +137,35 @@ const menuProps = {
 
 
 
+  // const getProjectTreeFromStoreOrAPI = async (projectId) => {
+  //   const cachedTree = useSelector(state => state.tasks.projects[projectId]?.tree);
+  //   if (cachedTree && cachedTree.length > 0) return cachedTree;
 
+  //   // Загружаем с сервера
+  //   const res = await fetch(`/api/tree?projectId=${projectId}`);
+  //   const data = await res.json();
+  //   return data.tree;
+  // };
 
 
 
 const TreeTaskPage = ({user_data, user_state}) => {
-    const baseProjects = useSelector(state => state.projects.list);
-    const activeProject = useSelector(state => state.ui.currentProject);
+  const dispatch = useDispatch();
+  const activeProject = useSelector(state => state.ui.currentProject);
+  const treeData = useSelector(state => state.tasks.projects[activeProject.id]?.tree || []);
+  const tabbedNodes = useSelector(state => state.tasks.projects[activeProject.id]?.tabbedNodes || {});
+  const activeDocument = useSelector(state => state.tasks.projects[activeProject.id]?.activeDocument || {});
+
+  const baseProjects = useSelector(state => state.projects.list);
+  const cachedTree = useSelector(state => state.tasks.projects[activeProject.id]?.tree || null);
+
+
 
     const [baseNodeCollection, setBaseNodeCollection] = useState(treeData);
     const [nodeCollection, setNodeCollection] = useState(treeData);
+
+    console.log('nodeCollection', treeData)
+
   const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [currentItemId, setCurrentItemId] = useState(null);
@@ -168,6 +188,17 @@ const TreeTaskPage = ({user_data, user_state}) => {
         return 0;
     }
 
+
+
+
+
+  useEffect(() => {
+    if (activeProject.id) {
+      dispatch(fetchProjectTree(activeProject.id));
+    }
+  }, [activeProject.id]);
+
+
     useEffect(() => {
       if (selectedKeys[0] !== 'root'){
         setSelectedNode(findNodeByKey(baseNodeCollection, selectedKeys[0]));
@@ -184,6 +215,9 @@ const TreeTaskPage = ({user_data, user_state}) => {
          setNodeCollection([findNodeByKey(baseNodeCollection, activeNode)]);
     }
   }, [baseNodeCollection, activeNode]);
+
+
+
 
     const getMaxDepth = (node) => {
         if (!node.children || node.children.length === 0) {
@@ -497,28 +531,71 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
 };
 
 
-    const makeNewNode = (nodeType)=>{
-        const nkey = generateRandomKey();
-        const newNode = {
-            title: nodeType === 'section' ? 'Новая секция ' + nkey : 'Новый документ'  + nkey,
-            key: nkey,
-            id: nkey, // можно использовать то же значение, что и key
-            type: nodeType,
-            children: [],
-        };
-        return newNode;
-    }
+const makeNewNode = (type, title, parentId = null, sort_order = 0) => {
+  return {
+    key: `${type}_${generateShortId()}`,
+    t: type,
+    title: title || (type === 's' ? 'Новая секция' : 'Новая задача'),
+    so: sort_order // Автоматический sort_order для корня
+  };
+};
 
-    const handleAddSection = (where, target_id) => {
-        console.log('where', where); // can be 'below' or 'child'
-        if (target_id){
-          const updatedTree = insertNodeInTree(baseNodeCollection, target_id, 'section', makeNewNode('section'), where);
-          setBaseNodeCollection(updatedTree);
-        } else {
-          setBaseNodeCollection([...nodeCollection, makeNewNode('section')]);
-        }
+const handleAddSection = (where, target_id) => {
+  const newNode = makeNewNode('s', `Новая секция ${where}`, treeData.length + 1);
 
-    }
+  dispatch(addTreeNode({
+    projectId: activeProject.id,
+    parentId: target_id || null, // null → корень
+    newNode
+  }));
+};
+
+    // const makeNewNode = (nodeType, where, target_id, sort_order = 0)=>{
+    //     const nkey = nodeType + '_new_' + generateShortId(19);
+    //     const newNode = {
+    //         title: nodeType === 's' ? 'Новая секция ' + nkey : 'Новый документ'  + nkey,
+    //         key: nkey,
+    //         // id: nkey, // можно использовать то же значение, что и key
+    //         t: nodeType,
+    //         // children: [],
+    //         so: where === 'after' ? 1 : 0,
+    //         childrens: []
+    //     };
+    //     return newNode;
+    // }
+
+    // const handleAddSection = (where, target_id) => {
+    //     console.log('where', where); // can be 'below' or 'child'
+
+    //     if (target_id){
+    //       let newNode =  makeNewNode('s', where, target_id);
+    //       dispatch(updateTreeNode({
+    //         projectId: activeProject.id,
+    //         key: target_id,
+    //         changes: {
+    //           childrens: [...findNodeByKey(treeData, target_id).childrens, makeNewNode('s', where, target_id)]
+    //         }
+    //       }));
+    //     } else {
+    //       let newNode =  makeNewNode('s', where, target_id, treeData.length + 1);
+    //       console.log('a', newNode)
+    //       dispatch(updateTreeNode({
+    //         projectId: activeProject.id,
+    //           key: target_id,
+    //           changes: {
+    //             childrens: [...treeData, newNode],
+    //           }
+    //         }));
+    //     }
+    //   }
+
+        // if (target_id){
+        //   const updatedTree = insertNodeInTree(baseNodeCollection, target_id, 's', makeNewNode('s', where, target_id), where);
+        //   setBaseNodeCollection(updatedTree);
+        // } else {
+        //   setBaseNodeCollection([...baseNodeCollection, makeNewNode('section')]);
+        // }
+
 
 
 
@@ -679,7 +756,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                                 selectedKeys={selectedKeys}
                                 onDragEnter={onDragEnter}
                                 onDrop={onDrop}
-                                treeData={baseNodeCollection}
+                                treeData={treeData}
                                 onSelect={onSelect}
                                 titleRender={nodeData => (
                                     <span className={`${nodeData.id === currentItemId ? "mi-cura-selected" : ""}`}>
@@ -777,7 +854,7 @@ const insertNodeInTree = (tree, parentId, type, newNode, position = 'child') => 
                             <div>
                                 <div className='mi-flat-task-stack-combo'>
 
-                                    {nodeCollection.map((item)=>(
+                                    {nodeCollection && nodeCollection?.map((item)=>(
                                         <>
                                             {item && (
                                           <TreeTaskRowCard
